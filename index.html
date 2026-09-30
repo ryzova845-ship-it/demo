@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Генератор идей</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --card: #fffcf7;
+      --ink: #2c3330;
+      --muted: #5f6b66;
+      --line: #e4ddd2;
+      --accent: #3f6f5b;
+      --accent-hover: #345c4b;
+      --accent-soft: #e7f0eb;
+      --shadow: 0 18px 40px rgba(60, 52, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, #fffaf3 0%, var(--bg) 48%);
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+    }
+
+    main {
+      width: min(100%, 560px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 40px 32px 32px;
+      text-align: center;
+    }
+
+    p.eyebrow {
+      margin: 0 0 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 2.6rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .lead {
+      margin: 16px auto 0;
+      max-width: 38ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    button {
+      margin-top: 28px;
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 650;
+      padding: 14px 28px;
+      cursor: pointer;
+      min-height: 48px;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button:focus-visible {
+      outline: 3px solid #9ec3b1;
+      outline-offset: 3px;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .idea {
+      margin-top: 28px;
+      min-height: 7.5rem;
+      padding: 22px 20px;
+      border-radius: 18px;
+      background: var(--accent-soft);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+    }
+
+    .idea p {
+      margin: 0;
+      font-size: clamp(1.15rem, 3vw, 1.35rem);
+      line-height: 1.45;
+      font-weight: 550;
+    }
+
+    .idea.is-empty p {
+      color: var(--muted);
+      font-weight: 450;
+      font-size: 1rem;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding: 32px 20px 24px;
+        border-radius: 20px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Учебный пример</p>
+    <h1>Генератор идей</h1>
+    <p class="lead">Нажмите кнопку — появится случайная спокойная идея из небольшого готового списка.</p>
+    <button type="button" id="next">Дать мне идею</button>
+    <section class="idea is-empty" id="idea" aria-live="polite">
+      <p>Идея появится здесь.</p>
+    </section>
+    <footer>Страница работает сама по себе, без дополнительных библиотек.</footer>
+  </main>
+  <script>
+    const ideas = [
+      "Нарисовать простой узор из кругов и линий.",
+      "Сложить бумажный кораблик.",
+      "Составить список из пяти приятных звуков.",
+      "Придумать название для вымышленного кафе.",
+      "Полить комнатное растение или поставить стакан воды на стол.",
+      "Написать четыре коротких строки о сегодняшнем дне.",
+      "Разложить книги или тетради по цвету корешков.",
+      "Сделать закладку из полоски бумаги.",
+      "Посмотреть в окно и назвать пять разных оттенков.",
+      "Сложить из листа веер.",
+      "Придумать настольную игру из трёх домашних предметов.",
+      "Нарисовать карту вымышленной улицы.",
+      "Выбрать одну спокойную мелодию и послушать её целиком.",
+      "Сложить аккуратно небольшую стопку бумаг.",
+      "Написать пять добрых слов на отдельном листе.",
+      "Сделать бумажный самолётик и запустить его по комнате.",
+      "Набросать вид из окна в несколько штрихов.",
+      "Придумать короткий рассказ ровно из пяти предложений."
+    ];
+
+    const button = document.querySelector("#next");
+    const box = document.querySelector("#idea");
+    const text = box.querySelector("p");
+    let lastIndex = -1;
+
+    button.addEventListener("click", () => {
+      let index = Math.floor(Math.random() * ideas.length);
+      if (ideas.length > 1 && index === lastIndex) {
+        index = (index + 1) % ideas.length;
+      }
+      lastIndex = index;
+      text.textContent = ideas[index];
+      box.classList.remove("is-empty");
+    });
+  </script>
+</body>
+</html>
